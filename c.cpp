@@ -2,50 +2,38 @@
 #include <iostream>
 #include <vector>
 
-int reduced_length(std::vector<int>& positions) {
-    sort(positions.begin(), positions.end());
+int reduced_length(std::vector<int>& x) {
+    sort(x.begin(), x.end());
 
-    constexpr int far_away = 20001;
-    int right = far_away, res = 0;
-
-    while (!positions.empty()) {
-        int center = positions.back();
-        positions.pop_back();
-        int left = -far_away;
-
-        if (!positions.empty())
-            left = positions.back();
-
-        int rhs = right - center;
-        int lhs = center - left;
-
-        if (rhs > lhs) {
-            res += lhs;
-            right = left;
-            if (!positions.empty())
-                positions.pop_back();
-        } else {
-            res += rhs;
-            right = center;
-        }
+    if (x.size() < 4) {
+        return x.back() - x.front();
     }
 
-    return res;
+    int f0 = x[1] - x[0];
+    int f1 = x[2] - x[1] + f0;
+
+    for (int i = 3; i < x.size(); ++i) {
+        int f_next = x[i] - x[i-1] + std::min(f0, f1);
+        f0 = f1;
+        f1 = f_next;
+    }
+
+    return f1;
 }
 
 int main() {
     int n = 1;
     std::cin >> n;
 
-    std::vector<int> positions;
+    std::vector<int> x;
 
     while (n--) {
-        int pos;
-        std::cin >> pos;
-        positions.push_back(pos);
+        int p;
+        std::cin >> p;
+        x.push_back(p);
     }
 
-    std::cout << reduced_length(positions) << "\n";
+    std::cout << reduced_length(x) << "\n";
 
     return 0;
 }
